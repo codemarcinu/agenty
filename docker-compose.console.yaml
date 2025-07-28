@@ -1,0 +1,101 @@
+# version: '3.8' - wersja jest deprecated, nie jest już wymagana
+
+services:
+  # Backend API
+  agenty-backend:
+    build:
+      context: ./agenty/backend
+      dockerfile: Dockerfile.dev
+    container_name: agenty-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - OLLAMA_URL=http://ollama:11434
+      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=sqlite:///./agenty.db
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./PARAGONY:/app/data/paragony:ro
+      - ./WIEDZA_RAG:/app/data/docs:ro
+      - agenty_data:/app/data
+    networks:
+      - agenty-network
+    depends_on:
+      - ollama
+      - redis
+    restart: unless-stopped
+    # healthcheck:
+    #   test: [ "CMD", "curl", "-f", "http://localhost:8000/api/health" ]
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 3
+
+  # Ollama - modele AI (używa istniejącego wolumenu z modelami)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: agenty-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - my_assistant_ollama_data:/root/.ollama
+    networks:
+      - agenty-network
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:11434/api/version" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis - cache i sesje
+  redis:
+    image: redis:7-alpine
+    container_name: agenty-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - agenty-network
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Aplikacja konsolowa
+  console-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.console
+    container_name: agenty-console
+    environment:
+      - BACKEND_URL=http://agenty-backend:8000
+      - OLLAMA_URL=http://ollama:11434
+      - PARAGONY_DIR=/app/paragony
+      - WIEDZA_RAG_DIR=/app/wiedza_rag
+    volumes:
+      - ./PARAGONY:/app/paragony:ro
+      - ./WIEDZA_RAG:/app/wiedza_rag:ro
+      - console_data:/app/data
+    networks:
+      - agenty-network
+    depends_on:
+      - agenty-backend
+      - ollama
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+
+volumes:
+  my_assistant_ollama_data:
+    external: true
+  redis_data:
+  agenty_data:
+  console_data:
+
+
+networks:
+  agenty-network:
+    driver: bridge

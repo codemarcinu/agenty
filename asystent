@@ -1,0 +1,298 @@
+#!/bin/bash
+
+# Alias "asystent" - uruchamianie aplikacji konsolowej Agenty
+# Autor: Agenty Team
+# Wersja: 1.0.0
+
+set -e
+
+# Automatyczne przejście do katalogu projektu
+PROJECT_DIR="/home/marcin/Dokumenty/PROJEKT/AGENTY"
+if [ "$PWD" != "$PROJECT_DIR" ]; then
+    cd "$PROJECT_DIR"
+fi
+
+# Kolorowe komunikaty
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Funkcja wyświetlania komunikatów
+print_info() {
+    echo -e "${BLUE}ℹ️  $1${NC}"
+}
+
+print_success() {
+    echo -e "${GREEN}✅ $1${NC}"
+}
+
+print_warning() {
+    echo -e "${YELLOW}⚠️  $1${NC}"
+}
+
+print_error() {
+    echo -e "${RED}❌ $1${NC}"
+}
+
+# Funkcja sprawdzania czy Docker jest dostępny
+check_docker() {
+    if ! command -v docker &> /dev/null; then
+        print_error "Docker nie jest zainstalowany!"
+        print_info "Zainstaluj Docker: https://docs.docker.com/get-docker/"
+        exit 1
+    fi
+    
+    if ! docker info &> /dev/null; then
+        print_error "Docker nie jest uruchomiony!"
+        print_info "Uruchom Docker Desktop lub sudo systemctl start docker"
+        exit 1
+    fi
+}
+
+# Funkcja sprawdzania czy docker-compose jest dostępny
+check_docker_compose() {
+    if ! command -v docker-compose &> /dev/null && ! docker compose version &> /dev/null; then
+        print_error "Docker Compose nie jest zainstalowany!"
+        print_info "Zainstaluj Docker Compose: https://docs.docker.com/compose/install/"
+        exit 1
+    fi
+}
+
+# Funkcja wyświetlania menu
+show_menu() {
+    echo -e "${BLUE}"
+    echo "🤖 Asystent Agenty - Menu"
+    echo "=========================="
+    echo "1. Uruchom w trybie deweloperskim (lokalnie)"
+    echo "2. Uruchom w trybie produkcyjnym (Docker)"
+    echo "3. Sprawdź status usług"
+    echo "4. Zatrzymaj usługi"
+    echo "5. Pokaż logi"
+    echo "6. Test aplikacji"
+    echo "7. Pomoc"
+    echo "0. Wyjście"
+    echo -e "${NC}"
+}
+
+# Funkcja uruchamiania w trybie deweloperskim
+run_dev_mode() {
+    print_info "Uruchamianie w trybie deweloperskim..."
+    
+    # Sprawdzenie czy środowisko wirtualne istnieje
+    if [ ! -d "venv" ]; then
+        print_info "Tworzenie środowiska wirtualnego..."
+        python -m venv venv
+    fi
+    
+    # Aktywacja środowiska wirtualnego
+    source venv/bin/activate
+    
+    # Instalacja zależności
+    print_info "Instalacja zależności..."
+    pip install -r requirements-console.txt
+    
+    # Sprawdzenie katalogów
+    mkdir -p PARAGONY WIEDZA_RAG exports
+    
+    # Uruchomienie testów
+    print_info "Uruchamianie testów..."
+    python test_app.py
+    
+    # Uruchomienie aplikacji
+    print_success "Uruchamianie aplikacji..."
+    python -m console_app.main --debug
+}
+
+# Funkcja uruchamiania w trybie produkcyjnym
+run_prod_mode() {
+    print_info "Uruchamianie w trybie produkcyjnym (Docker)..."
+    
+    # Sprawdzenie Docker
+    check_docker
+    check_docker_compose
+    
+    # Sprawdzenie katalogów
+    mkdir -p PARAGONY WIEDZA_RAG exports
+    
+    # Uruchomienie usług
+    print_info "Uruchamianie kontenerów..."
+    docker-compose -f docker-compose.console.yaml up -d
+    
+    # Czekanie na gotowość backendu
+    print_info "Oczekiwanie na gotowość backendu..."
+    for i in {1..30}; do
+        if curl -f http://localhost:8000/api/health &> /dev/null; then
+            print_success "Backend jest gotowy!"
+            break
+        fi
+        echo -n "."
+        sleep 2
+    done
+    
+    # Uruchomienie aplikacji konsolowej
+    print_success "Uruchamianie aplikacji konsolowej..."
+    docker-compose -f docker-compose.console.yaml run --rm console-app
+}
+
+# Funkcja sprawdzania statusu
+check_status() {
+    print_info "Sprawdzanie statusu usług..."
+    
+    # Sprawdzenie Docker
+    if command -v docker &> /dev/null; then
+        print_info "Status kontenerów:"
+        docker ps --filter "name=agenty" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+    else
+        print_warning "Docker nie jest zainstalowany"
+    fi
+    
+    # Sprawdzenie portów
+    print_info "Sprawdzanie portów:"
+    if netstat -tuln 2>/dev/null | grep -q ":8000 "; then
+        print_success "Port 8000 (Backend) - AKTYWNY"
+    else
+        print_warning "Port 8000 (Backend) - NIEAKTYWNY"
+    fi
+    
+    if netstat -tuln 2>/dev/null | grep -q ":11434 "; then
+        print_success "Port 11434 (Ollama) - AKTYWNY"
+    else
+        print_warning "Port 11434 (Ollama) - NIEAKTYWNY"
+    fi
+    
+    if netstat -tuln 2>/dev/null | grep -q ":6379 "; then
+        print_success "Port 6379 (Redis) - AKTYWNY"
+    else
+        print_warning "Port 6379 (Redis) - NIEAKTYWNY"
+    fi
+}
+
+# Funkcja zatrzymywania usług
+stop_services() {
+    print_info "Zatrzymywanie usług..."
+    
+    if [ -f "docker-compose.console.yaml" ]; then
+        docker-compose -f docker-compose.console.yaml down
+        print_success "Usługi zostały zatrzymane"
+    else
+        print_warning "Plik docker-compose.console.yaml nie istnieje"
+    fi
+}
+
+# Funkcja wyświetlania logów
+show_logs() {
+    print_info "Wyświetlanie logów..."
+    
+    if [ -f "docker-compose.console.yaml" ]; then
+        echo -e "${BLUE}Wybierz usługę:${NC}"
+        echo "1. Backend"
+        echo "2. Ollama"
+        echo "3. Redis"
+        echo "4. Console App"
+        echo "5. Wszystkie"
+        read -p "Wybierz opcję (1-5): " choice
+        
+        case $choice in
+            1) docker-compose -f docker-compose.console.yaml logs -f agenty-backend ;;
+            2) docker-compose -f docker-compose.console.yaml logs -f agenty-ollama ;;
+            3) docker-compose -f docker-compose.console.yaml logs -f agenty-redis ;;
+            4) docker-compose -f docker-compose.console.yaml logs -f agenty-console ;;
+            5) docker-compose -f docker-compose.console.yaml logs -f ;;
+            *) print_error "Nieprawidłowa opcja" ;;
+        esac
+    else
+        print_warning "Plik docker-compose.console.yaml nie istnieje"
+    fi
+}
+
+# Funkcja testowania aplikacji
+test_app() {
+    print_info "Uruchamianie testów aplikacji..."
+    
+    if [ -d "venv" ]; then
+        source venv/bin/activate
+        python test_app.py
+    else
+        print_warning "Środowisko wirtualne nie istnieje. Uruchom najpierw tryb deweloperski."
+    fi
+}
+
+# Funkcja pomocy
+show_help() {
+    echo -e "${BLUE}"
+    echo "🤖 Asystent Agenty - Pomoc"
+    echo "=========================="
+    echo ""
+    echo "Komendy:"
+    echo "  asystent          - Pokaż menu główne"
+    echo "  asystent dev      - Uruchom w trybie deweloperskim"
+    echo "  asystent prod     - Uruchom w trybie produkcyjnym"
+    echo "  asystent status   - Sprawdź status usług"
+    echo "  asystent stop     - Zatrzymaj usługi"
+    echo "  asystent logs     - Pokaż logi"
+    echo "  asystent test     - Uruchom testy"
+    echo "  asystent help     - Pokaż pomoc"
+    echo ""
+    echo "Tryby uruchamiania:"
+    echo "  - Deweloperski: Lokalne środowisko Python"
+    echo "  - Produkcyjny:  Kontenery Docker"
+    echo ""
+    echo "Katalogi:"
+    echo "  - PARAGONY/:     Pliki paragonów do przetwarzania"
+    echo "  - WIEDZA_RAG/:   Dokumenty do bazy wiedzy"
+    echo "  - exports/:      Wyeksportowane wyniki"
+    echo ""
+    echo "Porty:"
+    echo "  - 8000: Backend API"
+    echo "  - 11434: Ollama (AI)"
+    echo "  - 6379: Redis (Cache)"
+    echo -e "${NC}"
+}
+
+# Główna logika
+main() {
+    # Sprawdzenie argumentów
+    if [ $# -eq 0 ]; then
+        # Brak argumentów - pokaż menu
+        while true; do
+            show_menu
+            read -p "Wybierz opcję (0-7): " choice
+            
+            case $choice in
+                1) run_dev_mode; break ;;
+                2) run_prod_mode; break ;;
+                3) check_status ;;
+                4) stop_services ;;
+                5) show_logs ;;
+                6) test_app ;;
+                7) show_help ;;
+                0) print_info "Do widzenia! 👋"; exit 0 ;;
+                *) print_error "Nieprawidłowa opcja. Spróbuj ponownie." ;;
+            esac
+            
+            echo ""
+            read -p "Naciśnij Enter, aby kontynuować..."
+        done
+    else
+        # Argumenty podane - wykonaj odpowiednią akcję
+        case $1 in
+            dev) run_dev_mode ;;
+            prod) run_prod_mode ;;
+            status) check_status ;;
+            stop) stop_services ;;
+            logs) show_logs ;;
+            test) test_app ;;
+            help) show_help ;;
+            *) 
+                print_error "Nieznana komenda: $1"
+                print_info "Użyj 'asystent help' aby zobaczyć dostępne opcje"
+                exit 1
+                ;;
+        esac
+    fi
+}
+
+# Uruchomienie głównej funkcji
+main "$@" 

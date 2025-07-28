@@ -1,0 +1,28 @@
+FROM python:3.11-slim
+
+# Instalacja zależności systemowych
+RUN apt-get update && apt-get install -y \
+    curl \
+    wget \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Ustawienie katalogu roboczego
+WORKDIR /app
+
+# Kopiowanie plików aplikacji konsolowej
+COPY console_app/ ./console_app/
+COPY requirements-console.txt .
+
+# Instalacja zależności Python
+RUN pip install --no-cache-dir -r requirements-console.txt
+
+# Tworzenie katalogów dla danych
+RUN mkdir -p /app/paragony /app/wiedza_rag /app/data
+
+# Ustawienie zmiennych środowiskowych
+ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
+
+# Punkt wejścia
+ENTRYPOINT ["python", "-m", "console_app.main"] 
