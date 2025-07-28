@@ -1,0 +1,11 @@
+# Desktop GUI dependencies
+PyQt5==5.15.10
+PyQt5-Qt5==5.15.2
+PyQt5-sip==12.13.0
+
+# Additional dependencies for desktop app
+requests==2.32.4
+uvicorn==0.32.1
+
+# Include all backend dependencies
+-r requirements.txt 

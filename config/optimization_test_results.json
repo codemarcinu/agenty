@@ -1,0 +1,155 @@
+{
+  "timestamp": 1752939075.6988494,
+  "optimization_results": {
+    "search_agent": {
+      "total_time": 0.573265790939331,
+      "avg_time_per_query": 0.11465315818786621,
+      "queries_per_second": 8.721957735882329,
+      "cache_hit_rate": 0.0,
+      "parallel_search_rate": 1.6666666666666667,
+      "performance_metrics": {
+        "total_searches": 3,
+        "cache_hits": 0,
+        "cache_misses": 5,
+        "average_response_time": 0.46189157168070477,
+        "parallel_searches": 5,
+        "cache_hit_rate": 0.0,
+        "parallel_search_rate": 1.6666666666666667
+      }
+    },
+    "receipt_analysis": {
+      "total_time": 7.551573276519775,
+      "avg_time_per_receipt": 3.7757866382598877,
+      "receipts_per_second": 0.26484547348810494,
+      "batch_processing_rate": 0.5,
+      "preprocessing_rate": 0.0,
+      "performance_metrics": {
+        "total_receipts": 2,
+        "batch_processed": 1,
+        "average_processing_time": 7.17619264125824,
+        "preprocessing_used": 0,
+        "cache_hits": 0,
+        "batch_processing_rate": 0.5,
+        "preprocessing_rate": 0.0
+      }
+    },
+    "database": {
+      "total_queries": 30,
+      "failed_queries": 0,
+      "success_rate": 1.0,
+      "slow_queries_count": 0,
+      "connection_errors": 0,
+      "query_types": {
+        "PRAGMA": {
+          "count": 24,
+          "avg_time": 0.0003327031930287679,
+          "max_time": 0.003825664520263672,
+          "min_time": 0.00012111663818359375
+        },
+        "SELECT": {
+          "count": 1,
+          "avg_time": 0.0001990795135498047,
+          "max_time": 0.0001990795135498047,
+          "min_time": 0.0001990795135498047
+        },
+        "CREATE": {
+          "count": 5,
+          "avg_time": 0.0017786026000976562,
+          "max_time": 0.0035016536712646484,
+          "min_time": 0.0010380744934082031
+        }
+      }
+    },
+    "cache": {
+      "total_time": 5.269050598144531e-05,
+      "embeddings_cached": 5,
+      "embeddings_retrieved": 5,
+      "missing_embeddings": 0,
+      "cache_hit_rate": 5.0,
+      "performance_metrics": {
+        "total_operations": 0,
+        "redis_operations": 0,
+        "memory_operations": 1,
+        "embedding_operations": 0,
+        "batch_operations": 2,
+        "embedding_cache_stats": {
+          "size": 5,
+          "max_size": 1000,
+          "ttl": 86400,
+          "hits": 5,
+          "misses": 0,
+          "hit_rate": 1.0,
+          "memory_efficiency": 0.005
+        },
+        "rag_cache_stats": {
+          "name": "RAG",
+          "size": 0,
+          "max_size": 500,
+          "ttl": 1800,
+          "hits": 0,
+          "misses": 0,
+          "evictions": 0,
+          "total_requests": 0,
+          "hit_rate": 0,
+          "eviction_rate": 0,
+          "avg_access_count": 0,
+          "memory_efficiency": 0.0
+        },
+        "internet_cache_stats": {
+          "name": "Internet",
+          "size": 0,
+          "max_size": 200,
+          "ttl": 600,
+          "hits": 0,
+          "misses": 0,
+          "evictions": 0,
+          "total_requests": 0,
+          "hit_rate": 0,
+          "eviction_rate": 0,
+          "avg_access_count": 0,
+          "memory_efficiency": 0.0
+        },
+        "general_cache_stats": {
+          "name": "General",
+          "size": 0,
+          "max_size": 300,
+          "ttl": 3600,
+          "hits": 0,
+          "misses": 0,
+          "evictions": 0,
+          "total_requests": 0,
+          "hit_rate": 0,
+          "eviction_rate": 0,
+          "avg_access_count": 0,
+          "memory_efficiency": 0.0
+        },
+        "redis_connected": false,
+        "total_cache_hit_rate": 5.0
+      }
+    }
+  },
+  "summary": {
+    "search_agent": {
+      "avg_response_time": 0.11465315818786621,
+      "queries_per_second": 8.721957735882329,
+      "cache_hit_rate": 0.0,
+      "parallel_processing": 1.6666666666666667
+    },
+    "receipt_analysis": {
+      "avg_response_time": 3.7757866382598877,
+      "receipts_per_second": 0.26484547348810494,
+      "batch_processing": 0.5,
+      "preprocessing": 0.0
+    },
+    "database": {
+      "success_rate": 1.0,
+      "slow_queries": 0,
+      "connection_errors": 0
+    },
+    "cache": {
+      "cache_hit_rate": 5.0,
+      "embeddings_cached": 5,
+      "batch_operations": 2
+    }
+  }
+}

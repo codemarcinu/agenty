@@ -1,0 +1,119 @@
+{
+  "test_plan": {
+    "version": "1.0",
+    "created": "2025-07-07",
+    "description": "Comprehensive test plan to eliminate all errors in FoodSave AI project",
+    "critical_areas": [
+      {
+        "name": "Infrastructure",
+        "priority": "CRITICAL",
+        "issues": [
+          "Docker containers not running",
+          "Database connectivity issues",
+          "DNS resolution problems",
+          "Ollama service unavailable"
+        ],
+        "test_modules": [
+          "tests/test_infrastructure_fixes.py",
+          "tests/integration/test_docker_health.py",
+          "tests/integration/test_database_connectivity.py"
+        ],
+        "expected_outcome": "All infrastructure tests passing"
+      },
+      {
+        "name": "Memory Manager",
+        "priority": "HIGH",
+        "issues": [
+          "weakref/GC context cleanup",
+          "Missing semantic cache",
+          "Auto-summary functionality",
+          "Context preservation"
+        ],
+        "test_modules": [
+          "tests/test_memory_manager_fixes.py",
+          "tests/unit/test_enhanced_memory_manager.py"
+        ],
+        "expected_outcome": "Memory manager tests passing with proper weakref handling"
+      },
+      {
+        "name": "E2E Authentication",
+        "priority": "HIGH",
+        "issues": [
+          "Database setup for tests",
+          "Auth flow infrastructure",
+          "Missing auth modules",
+          "PostgreSQL connectivity in tests"
+        ],
+        "test_modules": [
+          "tests/test_e2e_auth_fixes.py",
+          "tests/integration/test_auth_flow.py"
+        ],
+        "expected_outcome": "All auth flow tests passing"
+      },
+      {
+        "name": "API Contracts",
+        "priority": "MEDIUM",
+        "issues": [
+          "Missing methods in agents",
+          "Incorrect method signatures",
+          "CORS headers",
+          "AsyncClient configuration"
+        ],
+        "test_modules": [
+          "tests/integration/test_agents.py",
+          "tests/unit/test_critical_fixes.py"
+        ],
+        "expected_outcome": "API contracts properly defined and tested"
+      },
+      {
+        "name": "Test Configuration",
+        "priority": "MEDIUM",
+        "issues": [
+          "pytest-asyncio configuration",
+          "AsyncClient setup",
+          "Fixture dependencies",
+          "Mock implementations"
+        ],
+        "test_modules": [
+          "tests/conftest.py",
+          "pytest.ini"
+        ],
+        "expected_outcome": "Proper test configuration and async support"
+      }
+    ],
+    "timeline": {
+      "week_1": [
+        "Fix infrastructure issues",
+        "Set up proper test environment",
+        "Fix Docker Compose configuration"
+      ],
+      "week_2": [
+        "Fix Memory Manager weakref issues",
+        "Implement proper context handling",
+        "Add semantic cache functionality"
+      ],
+      "week_3": [
+        "Fix E2E authentication tests",
+        "Set up test database properly",
+        "Fix auth flow infrastructure"
+      ],
+      "week_4": [
+        "Fix API contract issues",
+        "Update agent implementations",
+        "Fix method signatures"
+      ],
+      "week_5": [
+        "Fix test configuration",
+        "Update pytest setup",
+        "Fix async test issues"
+      ]
+    },
+    "success_criteria": {
+      "backend_tests": "95%+ pass rate",
+      "frontend_tests": "99%+ pass rate",
+      "integration_tests": "90%+ pass rate",
+      "e2e_tests": "80%+ pass rate",
+      "infrastructure_tests": "100% pass rate"
+    }
+  }
+} 

@@ -1,0 +1,164 @@
+from abc import ABC, abstractmethod
+import logging
+from typing import Any
+
+from agents.interfaces import AgentResponse, ErrorSeverity, IFallbackProvider
+from core.hybrid_llm_client import ModelComplexity, hybrid_llm_client
+
+logger = logging.getLogger(__name__)
+
+
+class FallbackStrategy(ABC):
+    """Base class for fallback strategies"""
+
+    @abstractmethod
+    async def execute(
+        self, input_data: dict[str, Any], error: Exception
+    ) -> AgentResponse | None:
+        pass
+
+
+class PromptRewritingStrategy(FallbackStrategy):
+    """Fallback strategy that rewrites the prompt"""
+
+    async def execute(
+        self, input_data: dict[str, Any], error: Exception
+    ) -> AgentResponse | None:
+        query = self._extract_query(input_data)
+        if not query:
+            return None
+
+        rewrite_prompt = (
+            f"Poniższe zapytanie spowodowało błąd: '{error!s}'. "
+            f"Przepisz zapytanie, aby było jaśniejsze i łatwiejsze do przetworzenia. "
+            f"Zachowaj intencję, ale uprość język i strukturę.\n\n"
+            f"Oryginalne zapytanie: '{query}'\n\n"
+            f"Przepisane zapytanie:"
+        )
+
+        response = await hybrid_llm_client.chat(
+            messages=[
+                {
+                    "role": "system",
+                    "content": "Jesteś pomocnym asystentem przepisującym zapytania.",
+                },
+                {"role": "user", "content": rewrite_prompt},
+            ],
+            model="gemma2:2b",
+            force_complexity=ModelComplexity.SIMPLE,
+        )
+
+        if response and "message" in response:
+            rewritten_query = response["message"]["content"].strip()
+            new_input = input_data.copy()
+            self._update_input(new_input, rewritten_query)
+            return AgentResponse(
+                success=True,
+                data=new_input,
+                message="Prompt rewritten successfully",
+                metadata={"original_query": query, "rewritten_query": rewritten_query},
+            )
+        return None
+
+    def _extract_query(self, input_data: dict[str, Any]) -> str | None:
+        for field in ["query", "prompt", "text", "content", "message"]:
+            if field in input_data and isinstance(input_data[field], str):
+                return input_data[field]
+        return None
+
+    def _update_input(self, input_data: dict[str, Any], new_query: str) -> None:
+        for field in ["query", "prompt", "text", "content", "message"]:
+            if field in input_data:
+                input_data[field] = new_query
+                break
+
+
+class SimplifiedModelStrategy(FallbackStrategy):
+    """Fallback strategy using simplified model"""
+
+    async def execute(
+        self, input_data: dict[str, Any], error: Exception
+    ) -> AgentResponse | None:
+        query = self._extract_query(input_data)
+        if not query:
+            return None
+
+        simplify_prompt = (
+            f"Zapytanie użytkownika: '{query}'\n\n"
+            f"Udziel prostej, zwięzłej odpowiedzi na to zapytanie. "
+            f"Jeśli zapytanie jest zbyt złożone lub niejasne, poproś o doprecyzowanie."
+        )
+
+        response = await hybrid_llm_client.chat(
+            messages=[
+                {
+                    "role": "system",
+                    "content": "Jesteś pomocnym asystentem udzielającym prostych odpowiedzi.",
+                },
+                {"role": "user", "content": simplify_prompt},
+            ],
+            model="llama3:8b",
+            force_complexity=ModelComplexity.STANDARD,
+        )
+
+        if response and "message" in response:
+            return AgentResponse(
+                success=True,
+                text=response["message"]["content"].strip(),
+                message="Odpowiedź wygenerowana w trybie uproszczonym",
+                metadata={"simplified": True, "original_query": query},
+            )
+        return None
+
+    def _extract_query(self, input_data: dict[str, Any]) -> str | None:
+        for field in ["query", "prompt", "text", "content", "message"]:
+            if field in input_data and isinstance(input_data[field], str):
+                return input_data[field]
+        return None
+
+
+class MinimalResponseStrategy(FallbackStrategy):
+    """Fallback strategy returning minimal response"""
+
+    async def execute(
+        self, input_data: dict[str, Any], error: Exception
+    ) -> AgentResponse:
+        return AgentResponse(
+            success=False,
+            error=f"Przepraszam, nie mogłem przetworzyć Twojego zapytania: {error!s}",
+            severity=ErrorSeverity.MEDIUM.value,
+            message="Wystąpił problem podczas przetwarzania zapytania. Proszę spróbować inaczej sformułować pytanie.",
+            metadata={"fallback_tier": "minimal_response"},
+        )
+
+
+class FallbackManager(IFallbackProvider):
+    """Manages fallback strategies execution"""
+
+    def __init__(self) -> None:
+        self.strategies = [
+            PromptRewritingStrategy(),
+            SimplifiedModelStrategy(),
+            MinimalResponseStrategy(),
+        ]
+
+    async def execute_fallback(
+        self, input_data: dict[str, Any], error: Exception
+    ) -> AgentResponse:
+        """Execute fallback strategies in order"""
+        for strategy in self.strategies:
+            try:
+                result = await strategy.execute(input_data, error)
+                if result:
+                    return result
+            except Exception:
+                logger.exception("Fallback strategy failed")
+
+        # If all strategies fail, return minimal response
+        return await MinimalResponseStrategy().execute(input_data, error)
+
+    async def get_fallback_response(self, context: dict[str, Any]) -> AgentResponse:
+        """Get fallback response when primary agent fails"""
+        error = context.get("error", Exception("Unknown error"))
+        input_data = context.get("input_data", {})
+        return await self.execute_fallback(input_data, error)

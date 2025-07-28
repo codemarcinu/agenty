@@ -1,0 +1,58 @@
+{
+  "intent_mappings": {
+    "general_conversation": "GeneralConversation",
+    "food_conversation": "GeneralConversation",
+    "shopping_conversation": "Categorization",
+    "information_query": "Search",
+    "cooking": "Chef",
+    "search": "Search",
+    "rag": "RAG",
+    "ocr": "OCR",
+    "categorization": "Categorization",
+    "meal_planning": "MealPlanner",
+    "analytics": "Analytics",
+    "general": "GeneralConversation",
+    "image_processing": "OCR",
+    "document_processing": "OCR",
+    "date": "GeneralConversation",
+    "pantry": "Pantry"
+  },
+  "agent_settings": {
+    "GeneralConversation": {
+      "description": "General conversation agent for everyday queries",
+      "fallback": true
+    },
+    "Search": {
+      "description": "Web search and information retrieval agent with weather support via Perplexica",
+      "requires_llm": true
+    },
+    "OCR": {
+      "description": "Optical character recognition agent",
+      "requires_image": true
+    },
+    "Chef": {
+      "description": "Cooking and recipe agent",
+      "requires_llm": true
+    },
+    "RAG": {
+      "description": "Retrieval augmented generation agent",
+      "requires_vector_store": true
+    },
+    "Categorization": {
+      "description": "Shopping and item categorization agent",
+      "requires_llm": true
+    },
+    "MealPlanner": {
+      "description": "Meal planning and nutrition agent",
+      "requires_llm": true
+    },
+    "Analytics": {
+      "description": "Data analysis and insights agent",
+      "requires_llm": true
+    },
+    "Pantry": {
+      "description": "Pantry and inventory management agent",
+      "requires_llm": true
+    }
+  }
+} 

@@ -1,0 +1,1 @@
+To jest testowy dokument do sprawdzenia RAG systemu. Zawiera informacje o przepisach kulinarnych i porady dotyczące gotowania.

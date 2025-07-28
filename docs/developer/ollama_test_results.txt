@@ -1,0 +1,36 @@
+nohup: zignorowane dane wejściowe
+time=2025-07-04T20:21:52.243+02:00 level=INFO source=routes.go:1234 msg="server config" env="map[CUDA_VISIBLE_DEVICES: GPU_DEVICE_ORDINAL: HIP_VISIBLE_DEVICES: HSA_OVERRIDE_GFX_VERSION: HTTPS_PROXY: HTTP_PROXY: NO_PROXY: OLLAMA_CONTEXT_LENGTH:4096 OLLAMA_DEBUG:DEBUG OLLAMA_FLASH_ATTENTION:false OLLAMA_GPU_OVERHEAD:0 OLLAMA_HOST:http://0.0.0.0:11434 OLLAMA_INTEL_GPU:false OLLAMA_KEEP_ALIVE:24h0m0s OLLAMA_KV_CACHE_TYPE: OLLAMA_LLM_LIBRARY: OLLAMA_LOAD_TIMEOUT:5m0s OLLAMA_MAX_LOADED_MODELS:0 OLLAMA_MAX_QUEUE:512 OLLAMA_MODELS:/home/marcin/.ollama/models OLLAMA_MULTIUSER_CACHE:false OLLAMA_NEW_ENGINE:false OLLAMA_NOHISTORY:false OLLAMA_NOPRUNE:false OLLAMA_NUM_PARALLEL:0 OLLAMA_ORIGINS:[http://localhost https://localhost http://localhost:* https://localhost:* http://127.0.0.1 https://127.0.0.1 http://127.0.0.1:* https://127.0.0.1:* http://0.0.0.0 https://0.0.0.0 http://0.0.0.0:* https://0.0.0.0:* app://* file://* tauri://* vscode-webview://* vscode-file://*] OLLAMA_SCHED_SPREAD:false ROCR_VISIBLE_DEVICES: http_proxy: https_proxy: no_proxy:]"
+time=2025-07-04T20:21:52.250+02:00 level=INFO source=images.go:479 msg="total blobs: 14"
+time=2025-07-04T20:21:52.250+02:00 level=INFO source=images.go:486 msg="total unused blobs removed: 0"
+time=2025-07-04T20:21:52.251+02:00 level=INFO source=routes.go:1287 msg="Listening on [::]:11434 (version 0.9.0)"
+time=2025-07-04T20:21:52.251+02:00 level=DEBUG source=sched.go:108 msg="starting llm scheduler"
+time=2025-07-04T20:21:52.253+02:00 level=INFO source=gpu.go:217 msg="looking for compatible GPUs"
+time=2025-07-04T20:21:52.254+02:00 level=DEBUG source=gpu.go:98 msg="searching for GPU discovery libraries for NVIDIA"
+time=2025-07-04T20:21:52.255+02:00 level=DEBUG source=gpu.go:501 msg="Searching for GPU library" name=libcuda.so*
+time=2025-07-04T20:21:52.255+02:00 level=DEBUG source=gpu.go:525 msg="gpu library search" globs="[/usr/local/lib/ollama/libcuda.so* /tmp/.mount_CursorzAyg8v/usr/lib/libcuda.so* /tmp/.mount_CursorzAyg8v/usr/lib32/libcuda.so* /tmp/.mount_CursorzAyg8v/usr/lib64/libcuda.so* /tmp/.mount_CursorzAyg8v/lib/libcuda.so* /tmp/.mount_CursorzAyg8v/lib/i386-linux-gnu/libcuda.so* /tmp/.mount_CursorzAyg8v/lib/x86_64-linux-gnu/libcuda.so* /tmp/.mount_CursorzAyg8v/lib/aarch64-linux-gnu/libcuda.so* /tmp/.mount_CursorzAyg8v/lib32/libcuda.so* /tmp/.mount_CursorzAyg8v/lib64/libcuda.so* /home/marcin/Dokumenty/agentai/makeit/AIASISSTMARUBO/libcuda.so* /usr/local/cuda*/targets/*/lib/libcuda.so* /usr/lib/*-linux-gnu/nvidia/current/libcuda.so* /usr/lib/*-linux-gnu/libcuda.so* /usr/lib/wsl/lib/libcuda.so* /usr/lib/wsl/drivers/*/libcuda.so* /opt/cuda/lib*/libcuda.so* /usr/local/cuda/lib*/libcuda.so* /usr/lib*/libcuda.so* /usr/local/lib*/libcuda.so*]"
+time=2025-07-04T20:21:52.260+02:00 level=DEBUG source=gpu.go:558 msg="discovered GPU libraries" paths=[/usr/lib/x86_64-linux-gnu/libcuda.so.570.133.07]
+initializing /usr/lib/x86_64-linux-gnu/libcuda.so.570.133.07
+dlsym: cuInit - 0x77061bd0fe70
+dlsym: cuDriverGetVersion - 0x77061bd0fe90
+dlsym: cuDeviceGetCount - 0x77061bd0fed0
+dlsym: cuDeviceGet - 0x77061bd0feb0
+dlsym: cuDeviceGetAttribute - 0x77061bd0ffb0
+dlsym: cuDeviceGetUuid - 0x77061bd0ff10
+dlsym: cuDeviceGetName - 0x77061bd0fef0
+dlsym: cuCtxCreate_v3 - 0x77061bd10190
+dlsym: cuMemGetInfo_v2 - 0x77061bd10910
+dlsym: cuCtxDestroy - 0x77061bd6eab0
+calling cuInit
+calling cuDriverGetVersion
+raw version 0x2f30
+CUDA driver version: 12.8
+calling cuDeviceGetCount
+device count 1
+time=2025-07-04T20:21:52.415+02:00 level=DEBUG source=gpu.go:125 msg="detected GPUs" count=1 library=/usr/lib/x86_64-linux-gnu/libcuda.so.570.133.07
+[GPU-35bda4cd-c193-65c3-0bd0-1807a3689b3b] CUDA totalMem 11913mb
+[GPU-35bda4cd-c193-65c3-0bd0-1807a3689b3b] CUDA freeMem 11240mb
+[GPU-35bda4cd-c193-65c3-0bd0-1807a3689b3b] Compute Capability 8.6
+time=2025-07-04T20:21:52.595+02:00 level=DEBUG source=amd_linux.go:419 msg="amdgpu driver not detected /sys/module/amdgpu"
+releasing cuda driver library
+time=2025-07-04T20:21:52.595+02:00 level=INFO source=types.go:130 msg="inference compute" id=GPU-35bda4cd-c193-65c3-0bd0-1807a3689b3b library=cuda variant=v12 compute=8.6 driver=12.8 name="NVIDIA GeForce RTX 3060" total="11.6 GiB" available="11.0 GiB"
+[GIN] 2025/07/04 - 20:22:15 | 200 |    2.186281ms |             ::1 | GET      "/api/tags"

@@ -1,0 +1,2 @@
+docs/archive/script_3.py:96: error: unexpected indent  [syntax]
+Found 1 error in 1 file (errors prevented further checking)

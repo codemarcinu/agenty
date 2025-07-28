@@ -1,0 +1,77 @@
+# =============================================================================
+# BACKEND DOCKERFILE DEV - FASTAPI + PYTHON 3.11 + TESSERACT OCR
+# OPTYMALIZOWANY DLA DEVELOPMENTU Z CACHE
+# =============================================================================
+FROM python:3.11-slim AS base
+
+# Ustaw zmienne środowiskowe
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV DEBIAN_FRONTEND=noninteractive
+
+# =============================================================================
+# DEPS STAGE - Zależności systemowe i Python
+# =============================================================================
+FROM base AS deps
+
+# Zainstaluj systemowe zależności z cache optimization
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update && apt-get install -y \
+    curl \
+    build-essential \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgomp1 \
+    libmagic1 \
+    # Tesseract OCR z obsługą języka polskiego
+    tesseract-ocr \
+    tesseract-ocr-pol \
+    tesseract-ocr-eng \
+    # Dodatkowe zależności dla lepszego OCR
+    libtesseract-dev \
+    libleptonica-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Sprawdź czy Tesseract jest zainstalowany
+RUN tesseract --version && \
+    tesseract --list-langs
+
+# Ustaw katalog roboczy
+WORKDIR /app
+
+# Skopiuj pliki zależności
+COPY src/backend/requirements.txt ./requirements.txt
+
+# Zainstaluj zależności Python z cache optimization
+RUN --mount=type=cache,target=/root/.cache/pip \
+    --mount=type=cache,target=/root/.cache/wheel \
+    pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir --retries 3 --timeout 300 -r requirements.txt
+
+# =============================================================================
+# FINAL STAGE - Aplikacja
+# =============================================================================
+FROM deps AS final
+
+# Skopiuj kod aplikacji
+COPY src/backend/ .
+
+# Utwórz katalogi
+RUN mkdir -p /app/data /app/logs /app/temp_uploads
+
+# Ustaw uprawnienia
+RUN chmod +x ./main.py && \
+    chmod 755 /app/logs && \
+    chmod 755 /app/data && \
+    chmod 755 /app/temp_uploads
+
+# Eksponuj port
+EXPOSE 8000
+
+# Uruchom aplikację z hot-reload dla developmentu
+CMD ["python", "-c", "import uvicorn; uvicorn.run('main:app', host='0.0.0.0', port=8000, reload=True, log_level='info')"] 

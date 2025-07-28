@@ -1,0 +1,55 @@
+{
+  "timestamp": "2025-07-27 19:39:18",
+  "results": [
+    {
+      "test": "HTML Structure",
+      "success": false,
+      "details": "Missing elements: ['chat-messages', 'chat-input', 'send-message', 'quick-suggestions', 'widgets-section', 'agents-container']"
+    },
+    {
+      "test": "CSS Loading",
+      "success": false,
+      "details": "CSS size: 22230 bytes"
+    },
+    {
+      "test": "JavaScript Loading",
+      "success": false,
+      "details": "JS size: 22227 bytes"
+    },
+    {
+      "test": "Navigation Structure",
+      "success": false,
+      "details": "Found pages: [], Missing: ['dashboard', 'receipts', 'pantry', 'rag']"
+    },
+    {
+      "test": "Agent Buttons",
+      "success": false,
+      "details": "Found agents: [], Missing: ['chef', 'weather', 'search', 'rag', 'mealplanner', 'analytics']"
+    },
+    {
+      "test": "Chat Interface",
+      "success": false,
+      "details": "Missing chat elements: ['chat-messages', 'chat-input', 'send-message', 'quick-suggestions']"
+    },
+    {
+      "test": "Receipt Upload Interface",
+      "success": false,
+      "details": "Missing receipt elements: ['receipt-upload-area', 'receipt-file-input', 'file-preview']"
+    },
+    {
+      "test": "Theme Functionality",
+      "success": false,
+      "details": "Missing theme elements: ['theme-toggle', 'color-picker-container', 'color-options']"
+    },
+    {
+      "test": "Responsive Design",
+      "success": true,
+      "details": "Viewport meta tag present"
+    },
+    {
+      "test": "Font Loading",
+      "success": false,
+      "details": "Found 0 Google Fonts links"
+    }
+  ]
+}

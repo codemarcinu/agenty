@@ -1,0 +1,500 @@
+[
+  {
+    "code": "W293",
+    "name": "blank-line-with-whitespace",
+    "count": 2121,
+    "fixable": true
+  },
+  {
+    "code": "Q000",
+    "name": "bad-quotes-inline-string",
+    "count": 1882,
+    "fixable": true
+  },
+  {
+    "code": "T201",
+    "name": "print",
+    "count": 823,
+    "fixable": false
+  },
+  {
+    "code": "F401",
+    "name": "unused-import",
+    "count": 380,
+    "fixable": true
+  },
+  {
+    "code": "I001",
+    "name": "unsorted-imports",
+    "count": 224,
+    "fixable": true
+  },
+  {
+    "code": "W291",
+    "name": "trailing-whitespace",
+    "count": 119,
+    "fixable": true
+  },
+  {
+    "code": "UP035",
+    "name": "deprecated-import",
+    "count": 113,
+    "fixable": false
+  },
+  {
+    "code": "W505",
+    "name": "doc-line-too-long",
+    "count": 109,
+    "fixable": false
+  },
+  {
+    "code": "UP006",
+    "name": "non-pep585-annotation",
+    "count": 68,
+    "fixable": true
+  },
+  {
+    "code": "W292",
+    "name": "missing-newline-at-end-of-file",
+    "count": 54,
+    "fixable": true
+  },
+  {
+    "code": "F841",
+    "name": "unused-variable",
+    "count": 48,
+    "fixable": false
+  },
+  {
+    "code": "PIE790",
+    "name": "unnecessary-placeholder",
+    "count": 44,
+    "fixable": true
+  },
+  {
+    "code": "RET505",
+    "name": "superfluous-else-return",
+    "count": 43,
+    "fixable": true
+  },
+  {
+    "code": null,
+    "name": "syntax-error",
+    "count": 42,
+    "fixable": false
+  },
+  {
+    "code": "PLW1510",
+    "name": "subprocess-run-without-check",
+    "count": 26,
+    "fixable": true
+  },
+  {
+    "code": "F541",
+    "name": "f-string-missing-placeholders",
+    "count": 21,
+    "fixable": true
+  },
+  {
+    "code": "LOG015",
+    "name": "root-logger-call",
+    "count": 19,
+    "fixable": false
+  },
+  {
+    "code": "SIM102",
+    "name": "collapsible-if",
+    "count": 17,
+    "fixable": false
+  },
+  {
+    "code": "PLW0603",
+    "name": "global-statement",
+    "count": 16,
+    "fixable": false
+  },
+  {
+    "code": "PTH110",
+    "name": "os-path-exists",
+    "count": 15,
+    "fixable": false
+  },
+  {
+    "code": "SIM117",
+    "name": "multiple-with-statements",
+    "count": 15,
+    "fixable": false
+  },
+  {
+    "code": "E741",
+    "name": "ambiguous-variable-name",
+    "count": 14,
+    "fixable": false
+  },
+  {
+    "code": "RUF010",
+    "name": "explicit-f-string-type-conversion",
+    "count": 14,
+    "fixable": true
+  },
+  {
+    "code": "RUF012",
+    "name": "mutable-class-default",
+    "count": 14,
+    "fixable": false
+  },
+  {
+    "code": "RUF013",
+    "name": "implicit-optional",
+    "count": 14,
+    "fixable": false
+  },
+  {
+    "code": "E722",
+    "name": "bare-except",
+    "count": 11,
+    "fixable": false
+  },
+  {
+    "code": "RUF006",
+    "name": "asyncio-dangling-task",
+    "count": 11,
+    "fixable": false
+  },
+  {
+    "code": "UP015",
+    "name": "redundant-open-modes",
+    "count": 11,
+    "fixable": true
+  },
+  {
+    "code": "PGH003",
+    "name": "blanket-type-ignore",
+    "count": 10,
+    "fixable": false
+  },
+  {
+    "code": "N806",
+    "name": "non-lowercase-variable-in-function",
+    "count": 9,
+    "fixable": false
+  },
+  {
+    "code": "C401",
+    "name": "unnecessary-generator-set",
+    "count": 8,
+    "fixable": false
+  },
+  {
+    "code": "TC003",
+    "name": "typing-only-standard-library-import",
+    "count": 8,
+    "fixable": false
+  },
+  {
+    "code": "PD901",
+    "name": "pandas-df-variable-name",
+    "count": 7,
+    "fixable": false
+  },
+  {
+    "code": "SIM105",
+    "name": "suppressible-exception",
+    "count": 7,
+    "fixable": false
+  },
+  {
+    "code": "UP038",
+    "name": "non-pep604-isinstance",
+    "count": 7,
+    "fixable": false
+  },
+  {
+    "code": "B017",
+    "name": "assert-raises-exception",
+    "count": 6,
+    "fixable": false
+  },
+  {
+    "code": "TC001",
+    "name": "typing-only-first-party-import",
+    "count": 6,
+    "fixable": false
+  },
+  {
+    "code": "TRY401",
+    "name": "verbose-log-message",
+    "count": 6,
+    "fixable": false
+  },
+  {
+    "code": "F811",
+    "name": "redefined-while-unused",
+    "count": 5,
+    "fixable": false
+  },
+  {
+    "code": "PERF102",
+    "name": "incorrect-dict-iterator",
+    "count": 5,
+    "fixable": false
+  },
+  {
+    "code": "PLR1714",
+    "name": "repeated-equality-comparison",
+    "count": 5,
+    "fixable": false
+  },
+  {
+    "code": "PTH107",
+    "name": "os-remove",
+    "count": 5,
+    "fixable": false
+  },
+  {
+    "code": "SIM118",
+    "name": "in-dict-keys",
+    "count": 5,
+    "fixable": false
+  },
+  {
+    "code": "UP041",
+    "name": "timeout-error-alias",
+    "count": 5,
+    "fixable": true
+  },
+  {
+    "code": "N815",
+    "name": "mixed-case-variable-in-class-scope",
+    "count": 4,
+    "fixable": false
+  },
+  {
+    "code": "PTH100",
+    "name": "os-path-abspath",
+    "count": 4,
+    "fixable": false
+  },
+  {
+    "code": "PTH103",
+    "name": "os-makedirs",
+    "count": 4,
+    "fixable": false
+  },
+  {
+    "code": "TC002",
+    "name": "typing-only-third-party-import",
+    "count": 4,
+    "fixable": false
+  },
+  {
+    "code": "TID252",
+    "name": "relative-imports",
+    "count": 4,
+    "fixable": false
+  },
+  {
+    "code": "C416",
+    "name": "unnecessary-comprehension",
+    "count": 3,
+    "fixable": false
+  },
+  {
+    "code": "N805",
+    "name": "invalid-first-argument-name-for-method",
+    "count": 3,
+    "fixable": false
+  },
+  {
+    "code": "N818",
+    "name": "error-suffix-on-exception-name",
+    "count": 3,
+    "fixable": false
+  },
+  {
+    "code": "NPY002",
+    "name": "numpy-legacy-random",
+    "count": 3,
+    "fixable": false
+  },
+  {
+    "code": "PD011",
+    "name": "pandas-use-of-dot-values",
+    "count": 3,
+    "fixable": false
+  },
+  {
+    "code": "PTH109",
+    "name": "os-getcwd",
+    "count": 3,
+    "fixable": false
+  },
+  {
+    "code": "PTH208",
+    "name": "os-listdir",
+    "count": 3,
+    "fixable": false
+  },
+  {
+    "code": "UP045",
+    "name": "non-pep604-annotation-optional",
+    "count": 3,
+    "fixable": true
+  },
+  {
+    "code": "B006",
+    "name": "mutable-argument-default",
+    "count": 2,
+    "fixable": false
+  },
+  {
+    "code": "FURB162",
+    "name": "fromisoformat-replace-z",
+    "count": 2,
+    "fixable": false
+  },
+  {
+    "code": "LOG014",
+    "name": "exc-info-outside-except-handler",
+    "count": 2,
+    "fixable": false
+  },
+  {
+    "code": "PIE810",
+    "name": "multiple-starts-ends-with",
+    "count": 2,
+    "fixable": false
+  },
+  {
+    "code": "PLC0206",
+    "name": "dict-index-missing-items",
+    "count": 2,
+    "fixable": false
+  },
+  {
+    "code": "PLW2901",
+    "name": "redefined-loop-name",
+    "count": 2,
+    "fixable": false
+  },
+  {
+    "code": "PTH122",
+    "name": "os-path-splitext",
+    "count": 2,
+    "fixable": false
+  },
+  {
+    "code": "RUF003",
+    "name": "ambiguous-unicode-character-comment",
+    "count": 2,
+    "fixable": false
+  },
+  {
+    "code": "RUF015",
+    "name": "unnecessary-iterable-allocation-for-first-element",
+    "count": 2,
+    "fixable": false
+  },
+  {
+    "code": "SIM103",
+    "name": "needless-bool",
+    "count": 2,
+    "fixable": false
+  },
+  {
+    "code": "SIM108",
+    "name": "if-else-block-instead-of-if-exp",
+    "count": 2,
+    "fixable": false
+  },
+  {
+    "code": "SIM110",
+    "name": "reimplemented-builtin",
+    "count": 2,
+    "fixable": false
+  },
+  {
+    "code": "SIM115",
+    "name": "open-file-with-context-handler",
+    "count": 2,
+    "fixable": false
+  },
+  {
+    "code": "UP028",
+    "name": "yield-in-for-loop",
+    "count": 2,
+    "fixable": false
+  },
+  {
+    "code": "ARG005",
+    "name": "unused-lambda-argument",
+    "count": 1,
+    "fixable": false
+  },
+  {
+    "code": "C414",
+    "name": "unnecessary-double-cast-or-process",
+    "count": 1,
+    "fixable": false
+  },
+  {
+    "code": "PERF403",
+    "name": "manual-dict-comprehension",
+    "count": 1,
+    "fixable": false
+  },
+  {
+    "code": "PLW0602",
+    "name": "global-variable-not-assigned",
+    "count": 1,
+    "fixable": false
+  },
+  {
+    "code": "PTH101",
+    "name": "os-chmod",
+    "count": 1,
+    "fixable": false
+  },
+  {
+    "code": "PTH112",
+    "name": "os-path-isdir",
+    "count": 1,
+    "fixable": false
+  },
+  {
+    "code": "PTH202",
+    "name": "os-path-getsize",
+    "count": 1,
+    "fixable": false
+  },
+  {
+    "code": "PTH204",
+    "name": "os-path-getmtime",
+    "count": 1,
+    "fixable": false
+  },
+  {
+    "code": "RUF005",
+    "name": "collection-literal-concatenation",
+    "count": 1,
+    "fixable": false
+  },
+  {
+    "code": "RUF019",
+    "name": "unnecessary-key-check",
+    "count": 1,
+    "fixable": true
+  },
+  {
+    "code": "SIM114",
+    "name": "if-with-same-arms",
+    "count": 1,
+    "fixable": true
+  },
+  {
+    "code": "UP046",
+    "name": "non-pep695-generic-class",
+    "count": 1,
+    "fixable": false
+  }
+]

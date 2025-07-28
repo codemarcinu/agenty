@@ -1,0 +1,155 @@
+# =============================================================================
+# BACKEND DOCKERFILE - ULTRA-OPTIMIZED MULTI-STAGE BUILD (FoodSave AI)
+# =============================================================================
+
+# Stage 1: Base Python Builder
+FROM python:3.11-slim AS python-base
+
+# Set environment variables for optimization
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONHASHSEED=random \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    DEBIAN_FRONTEND=noninteractive
+
+# Install system dependencies in a single layer with cache mounts
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    rm -f /etc/apt/apt.conf.d/docker-clean && \
+    apt-get update && apt-get install -y --no-install-recommends \
+    # Essential build tools
+    build-essential \
+    curl \
+    pkg-config \
+    # Core libraries for Python extensions
+    libffi-dev \
+    libssl-dev \
+    # OCR and image processing dependencies
+    tesseract-ocr \
+    tesseract-ocr-pol \
+    tesseract-ocr-eng \
+    libtesseract-dev \
+    libleptonica-dev \
+    # Image processing libraries
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgomp1 \
+    libmagic1 \
+    # Graphics libraries for EasyOCR
+    libfontconfig1 \
+    libfreetype6 \
+    libpng16-16 \
+    libjpeg62-turbo \
+    libharfbuzz0b \
+    libfribidi0 \
+    # X11 libraries (minimal set)
+    libx11-6 \
+    libxcb1 \
+    libxcb-render0 \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Stage 2: Python Dependencies Builder
+FROM python-base AS deps-builder
+
+# Create virtual environment
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Copy only requirements first for better cache utilization
+COPY src/backend/requirements.txt /tmp/requirements.txt
+
+# Install Python dependencies with optimizations
+RUN --mount=type=cache,target=/root/.cache/pip \
+    --mount=type=cache,target=/root/.cache/wheel \
+    pip install --upgrade pip setuptools wheel && \
+    pip install --no-deps --require-hashes -r /tmp/requirements.txt || \
+    pip install --no-cache-dir --retries 3 --timeout 300 -r /tmp/requirements.txt
+
+# Models will be downloaded at runtime as needed
+
+# Stage 3: Application Builder
+FROM python-base AS app-builder
+
+# Copy virtual environment from deps stage
+COPY --from=deps-builder /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Create application structure
+WORKDIR /app
+RUN mkdir -p data logs temp_uploads cache
+
+# Copy application code in optimal order (least to most frequently changed)
+COPY src/backend/settings.py ./settings.py
+COPY src/api/ ./api/
+COPY src/tasks/ ./tasks/
+COPY src/backend/ ./backend/
+COPY src/worker.py ./
+COPY src/backend/main.py ./
+COPY src/backend/docker_telegram_poller.py ./
+
+# Pre-compile Python files for faster startup (keep .py files for debugging)
+RUN python -m compileall -b .
+
+# Stage 4: Runtime Base
+FROM python:3.11-slim AS runtime-base
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    tesseract-ocr \
+    tesseract-ocr-pol \
+    tesseract-ocr-eng \
+    libtesseract-dev \
+    libleptonica-dev \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libgomp1 \
+    libmagic1 \
+    libfontconfig1 \
+    libfreetype6 \
+    libpng16-16 \
+    libjpeg62-turbo \
+    libharfbuzz0b \
+    libfribidi0 \
+    libx11-6 \
+    libxcb1 \
+    libxcb-render0 \
+    curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Copy virtual environment
+COPY --from=deps-builder /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Stage 5: Production
+FROM runtime-base AS production
+
+WORKDIR /app
+
+# Copy application from builder
+COPY --from=app-builder /app ./
+
+# EasyOCR cache will be created at runtime
+
+# Set runtime environment
+ENV PYTHONPATH=/app \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD python -c "import requests; requests.get('http://localhost:8000/health', timeout=5)" || exit 1
+
+# Expose ports
+EXPOSE 8000 8002
+
+# Run application with optimized settings
+CMD ["python", "-O", "-c", "import uvicorn; uvicorn.run('main:app', host='0.0.0.0', port=8000, workers=1, loop='uvloop', http='httptools', access_log=False)"]

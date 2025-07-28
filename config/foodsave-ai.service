@@ -1,0 +1,37 @@
+[Unit]
+Description=FoodSave AI Application
+Documentation=https://github.com/foodsave-ai
+Requires=docker.service
+After=docker.service
+StartLimitBurst=3
+StartLimitIntervalSec=60
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+User=root
+Group=root
+WorkingDirectory=/home/marcin/Dokumenty/agentai/makeit/AIASISSTMARUBO
+Environment=DOCKER_BUILDKIT=1
+Environment=COMPOSE_DOCKER_CLI_BUILD=1
+
+# Uruchomienie systemu
+ExecStart=/bin/bash -c 'cd /home/marcin/Dokumenty/agentai/makeit/AIASISSTMARUBO && docker compose up -d'
+
+# Zatrzymanie systemu
+ExecStop=/bin/bash -c 'cd /home/marcin/Dokumenty/agentai/makeit/AIASISSTMARUBO && docker compose down'
+
+# Restart w przypadku awarii
+Restart=on-failure
+RestartSec=30
+
+# Timeout
+TimeoutStartSec=300
+TimeoutStopSec=60
+
+# Logi
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

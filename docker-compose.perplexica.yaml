@@ -1,0 +1,61 @@
+# Perplexica Integration for FoodSave AI
+version: '3.8'
+
+services:
+  perplexica-app:
+    image: itzcrazykns1337/perplexica:main
+    container_name: foodsave-perplexica-app
+    ports:
+      - "3000:3000"
+    environment:
+      - SEARXNG_API_URL=http://perplexica-searxng:8080
+      - DATA_DIR=/home/perplexica
+    volumes:
+      - perplexica_data:/home/perplexica
+    networks:
+      - foodsave-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  perplexica-searxng:
+    image: searxng/searxng:latest
+    container_name: foodsave-perplexica-searxng
+    ports:
+      - "4000:8080"
+    volumes:
+      - searxng_data:/etc/searxng
+    networks:
+      - foodsave-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  telegram-poller:
+    image: docker-telegram-poller
+    container_name: foodsave-telegram-poller
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
+      - WEBHOOK_URL=${WEBHOOK_URL:-}
+    networks:
+      - foodsave-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "pgrep", "python3"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  perplexica_data:
+  searxng_data:
+
+networks:
+  foodsave-network:
+    external: true 

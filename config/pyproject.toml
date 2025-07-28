@@ -1,0 +1,240 @@
+[tool.poetry]
+name = "my_assistant"
+version = "0.1.0"
+description = "Asystent AI z backendem FastAPI i frontendem Next.js"
+authors = ["Twoje Imię <twoj@email.com>"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.12,<3.13"
+python-multipart = "^0.0.20"
+slowapi = "^0.1.9"
+aiofiles = "^24.1.0"
+pyjwt = "^2.10.1"
+passlib = "^1.7.4"
+email-validator = "^2.2.0"
+langdetect = "^1.0.9"
+sentence-transformers = "^3.3.0"
+redis = "^5.2.1"
+celery = "^5.4.0"
+fastapi = "^0.115.13"
+uvicorn = "^0.32.1"
+websockets = "^12.0"
+pydantic = "^2.11.7"
+structlog = "^25.4.0"
+numpy = "^2.3.1"
+httpx = "^0.28.1"
+opentelemetry-api = "^1.34.1"
+opentelemetry-sdk = "^1.34.1"
+opentelemetry-instrumentation = "^0.55b1"
+pytest = "^8.4.1"
+pytest-asyncio = "^1.0.0"
+sqlalchemy = "^2.0.41"
+ollama = "^0.5.1"
+pybreaker = "^1.3.0"
+pydantic-settings = "^2.10.1"
+prometheus-client = "^0.22.1"
+opentelemetry-exporter-jaeger = "^1.21.0"
+asyncpg = "^0.30.0"
+faiss-cpu = "^1.11.0"
+pytz = "^2025.2"
+requests = "^2.32.4"
+deprecated = "^1.2.18"
+opentelemetry-instrumentation-httpx = "^0.55b1"
+pymupdf = "^1.26.1"
+opentelemetry-instrumentation-sqlalchemy = "^0.55b1"
+pytesseract = "^0.3.13"
+opencv-python = "^4.8.1.78"
+jsonschema = "^4.21.0"
+alembic = "^1.16.2"
+psycopg2-binary = "^2.9.10"
+psutil = "^6.1.0"
+# Security and backup dependencies
+cryptography = "^42.0.0"
+bcrypt = "^4.1.0"
+boto3 = "^1.35.0"
+botocore = "^1.35.0"
+# Text processing dependencies
+rapidfuzz = "^3.10.0"
+
+# Removed duplicate tool.ruff section
+
+[tool.poetry.group.dev.dependencies]
+memory-profiler = "^0.61.0"
+pytest-benchmark = "^5.1.0"
+pytest-cov = "^6.2.1"
+# Code Quality Tools
+ruff = "^0.8.1"
+pylint = "^3.1.0"
+bandit = "^1.7.8"
+black = "^25.1.0"
+isort = "^5.10.1"
+mypy = "^1.11.0"
+pre-commit = "^3.7.1"
+# Heavy ML packages moved to dev dependencies for faster production builds
+torch = "^2.7.1"
+transformers = "^4.52.4"
+scikit-learn = "^1.7.0"
+pyinstaller = "^6.9.0"
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "foodsave-ai"
+version = "2.0.0"
+description = "FoodSave AI - Intelligent Food Management System"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "FoodSave AI Team", email = "team@foodsave.ai"}
+]
+maintainers = [
+    {name = "FoodSave AI Team", email = "team@foodsave.ai"}
+]
+keywords = ["ai", "food", "management", "desktop", "gui"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Desktop Environment",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.100.0",
+    "uvicorn>=0.22.0",
+    "pydantic>=2.0.0",
+    "sqlalchemy>=2.0.0",
+    "alembic>=1.11.0",
+    "psycopg2-binary>=2.9.0",
+    "httpx>=0.24.0",
+    "structlog>=23.0.0",
+    "python-dotenv>=1.0.0",
+    "celery>=5.3.0",
+    "redis>=4.5.0",
+    "prometheus-client>=0.17.0",
+    "PySide6>=6.5.0",
+    "qasync>=0.24.0",
+]
+
+[project.optional-dependencies]
+gui = [
+    "PySide6>=6.5.0",
+    "qasync>=0.24.0",
+    "httpx>=0.24.0",
+]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0.0",
+    "pre-commit>=3.0.0",
+]
+desktop = [
+    "PySide6>=6.5.0",
+    "qasync>=0.24.0",
+    "httpx>=0.24.0",
+    "pyinstaller>=5.0.0",
+]
+
+[project.scripts]
+foodsave-backend = "src.backend.main:main"
+foodsave-gui = "gui.app:main"
+
+[project.urls]
+Homepage = "https://github.com/foodsave-ai/foodsave-ai"
+Documentation = "https://github.com/foodsave-ai/foodsave-ai/docs"
+Repository = "https://github.com/foodsave-ai/foodsave-ai"
+"Bug Tracker" = "https://github.com/foodsave-ai/foodsave-ai/issues"
+
+[tool.setuptools.packages.find]
+include = ["src*", "gui*"]
+
+[tool.black]
+line-length = 88
+target-version = ['py311']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "C4", # flake8-comprehensions
+    "UP", # pyupgrade
+]
+ignore = [
+    "E501",  # line too long, handled by black
+    "B008",  # do not perform function calls in argument defaults
+    "C901",  # too complex
+]
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
+"tests/*" = ["B011"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = [
+    "PySide6.*",
+    "qasync.*",
+    "httpx.*",
+    "structlog.*",
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--verbose",
+    "--tb=short",
+]
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests",
+    "e2e: End-to-end tests",
+    "slow: Slow running tests",
+] 

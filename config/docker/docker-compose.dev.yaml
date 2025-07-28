@@ -1,0 +1,369 @@
+version: '3.8'
+
+services:
+  # =============================================================================
+  # BACKEND - FASTAPI (Development with Gmail Inbox Zero)
+  # =============================================================================
+  backend:
+    build:
+      context: .
+      dockerfile: src/backend/Dockerfile.dev
+    container_name: foodsave-backend-dev
+    restart: unless-stopped
+    environment:
+      - ENVIRONMENT=development
+      - LOG_LEVEL=DEBUG
+      - PYTHONPATH=/app
+      - DATABASE_URL=sqlite:///data/foodsave_dev.db
+      - REDIS_URL=redis://redis:6379
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+      - REDIS_PASSWORD=
+      - REDIS_USE_CACHE=True
+      - OLLAMA_URL=http://ollama:11434
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_MODEL=SpeakLeash/bielik-11b-v2.3-instruct:Q5_K_M
+      - OPENWEATHER_API_KEY=your_openweather_api_key_here
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - SECRET_KEY=dev-secret-key-change-in-production
+      - CORS_ORIGINS=*
+      - PORT=8000
+      - HOST=0.0.0.0
+      # GPU Configuration for OCR
+      - USE_GPU_OCR=true
+      - GPU_DEVICE_ID=0
+      # Performance optimization
+      - OCR_TIMEOUT=300
+      - ANALYSIS_TIMEOUT=240
+      - MAX_FILE_SIZE=10485760
+      # Performance optimizations
+      - WORKERS_PER_CORE=1
+      - MAX_WORKERS=2
+      - WEB_CONCURRENCY=2
+      - PYTHONUNBUFFERED=1
+      # Gmail Inbox Zero Enhanced Configuration (Development)
+      - GMAIL_INBOX_ZERO_ENABLED=true
+      - GMAIL_CACHE_TTL_HOURS=1
+      - GMAIL_RATE_LIMIT_PER_SECOND=5
+      - GMAIL_BATCH_SIZE=10
+      - GMAIL_PREFILTER_ENABLED=true
+      - GMAIL_SMART_CACHE_SIZE=100
+      - GMAIL_EXPONENTIAL_BACKOFF_MAX_RETRIES=2
+      - GMAIL_QUOTA_EXCEEDED_BACKOFF_MULTIPLIER=1.2
+      - GMAIL_ADAPTIVE_RATE_LIMITING=true
+      - GMAIL_SUCCESS_RATE_THRESHOLD=0.9
+      - GMAIL_FAILURE_RATE_THRESHOLD=0.7
+      - GMAIL_BATCH_PROCESSING_ENABLED=true
+      - GMAIL_CONCURRENT_SEMAPHORE_LIMIT=2
+      - GMAIL_PREFILTER_CONFIDENCE_THRESHOLD=0.7
+      - GMAIL_ML_CLASSIFIER_ENABLED=true
+      - GMAIL_NEWSLETTER_PATTERNS=newsletter,unsubscribe,mailing list,weekly digest,monthly update,email digest,roundup,summary
+      - GMAIL_SPAM_KEYWORDS=viagra,casino,lottery,winner,congratulations,free money,urgent,act now,limited time,click here,unsubscribe,remove from list,earn money,work from home
+      - GMAIL_WHITELIST_DOMAINS=linkedin.com,github.com,stackoverflow.com,amazon.com,google.com,microsoft.com,apple.com,netflix.com,spotify.com,dropbox.com,slack.com
+      - GMAIL_SAFE_SENDERS=
+      - GMAIL_AUTOMATED_PATTERNS=receipt,confirmation,order,booking,reservation,payment,invoice,statement,report,notification
+      # Development specific settings
+      - GMAIL_DEBUG_MODE=true
+      - GMAIL_LOG_DETAILED_STATS=true
+      - GMAIL_MOCK_GMAIL_API=true
+      - GMAIL_TEST_MODE=true
+    volumes:
+      - backend_data_dev:/app/data
+      - backend_logs_dev:/app/logs
+      - temp_uploads_dev:/app/temp_uploads
+      - ./config:/app/config:ro
+      # Mount source code for development hot-reload
+      - ./src:/app/src
+      - ./main.py:/app/main.py
+      # Gmail Inbox Zero development volumes
+      - ./data/gmail_cache:/app/data/gmail_cache
+      - ./data/gmail_logs:/app/data/gmail_logs
+      - ./data/gmail_batch_operations:/app/data/gmail_batch_operations
+    ports:
+      - "8000:8000"
+      - "8002:8002"
+    networks:
+      - foodsave-network-dev
+    depends_on:
+      redis:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+          cpus: '2.0'
+        reservations:
+          memory: 2G
+          cpus: '1.0'
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+
+  # =============================================================================
+  # CELERY WORKER - DEVELOPMENT
+  # =============================================================================
+  celery-worker:
+    build:
+      context: .
+      dockerfile: src/backend/Dockerfile.dev
+    container_name: foodsave-celery-worker-dev
+    restart: unless-stopped
+    command: celery -A worker worker --loglevel=debug --concurrency=1
+    environment:
+      - ENVIRONMENT=development
+      - LOG_LEVEL=DEBUG
+      - PYTHONPATH=/app
+      - DATABASE_URL=sqlite:///data/foodsave_dev.db
+      - REDIS_URL=redis://redis:6379
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+      - REDIS_PASSWORD=
+      - REDIS_USE_CACHE=True
+      - OLLAMA_URL=http://ollama:11434
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_MODEL=SpeakLeash/bielik-11b-v2.3-instruct:Q5_K_M
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      # GPU Configuration for OCR
+      - USE_GPU_OCR=false
+      - GPU_DEVICE_ID=0
+      # Performance optimization
+      - OCR_TIMEOUT=300
+      - ANALYSIS_TIMEOUT=240
+      - MAX_FILE_SIZE=10485760
+      # Fix for Celery security warning
+      - C_FORCE_ROOT=true
+      # Gmail Inbox Zero Enhanced Configuration for Celery (Development)
+      - GMAIL_INBOX_ZERO_ENABLED=true
+      - GMAIL_CACHE_TTL_HOURS=1
+      - GMAIL_RATE_LIMIT_PER_SECOND=3
+      - GMAIL_BATCH_SIZE=5
+      - GMAIL_PREFILTER_ENABLED=true
+      - GMAIL_SMART_CACHE_SIZE=50
+      - GMAIL_EXPONENTIAL_BACKOFF_MAX_RETRIES=2
+      - GMAIL_QUOTA_EXCEEDED_BACKOFF_MULTIPLIER=1.2
+      - GMAIL_ADAPTIVE_RATE_LIMITING=true
+      - GMAIL_SUCCESS_RATE_THRESHOLD=0.9
+      - GMAIL_FAILURE_RATE_THRESHOLD=0.7
+      - GMAIL_BATCH_PROCESSING_ENABLED=true
+      - GMAIL_CONCURRENT_SEMAPHORE_LIMIT=1
+      - GMAIL_PREFILTER_CONFIDENCE_THRESHOLD=0.7
+      - GMAIL_ML_CLASSIFIER_ENABLED=true
+      # Development specific settings
+      - GMAIL_DEBUG_MODE=true
+      - GMAIL_LOG_DETAILED_STATS=true
+      - GMAIL_MOCK_GMAIL_API=true
+      - GMAIL_TEST_MODE=true
+    volumes:
+      - backend_data_dev:/app/data
+      - backend_logs_dev:/app/logs
+      - temp_uploads_dev:/app/temp_uploads
+      # Gmail Inbox Zero development volumes
+      - ./data/gmail_cache:/app/data/gmail_cache
+      - ./data/gmail_logs:/app/data/gmail_logs
+      - ./data/gmail_batch_operations:/app/data/gmail_batch_operations
+    networks:
+      - foodsave-network-dev
+    depends_on:
+      redis:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "celery", "-A", "worker", "inspect", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 1G
+          cpus: '0.5'
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+
+  # =============================================================================
+  # FRONTEND - NEXT.JS APPLICATION (Development)
+  # =============================================================================
+  frontend:
+    build:
+      context: ./modern-frontend
+      dockerfile: Dockerfile
+      target: deps
+    container_name: foodsave-frontend-dev
+    restart: unless-stopped
+    command: npm run dev
+    environment:
+      - NODE_ENV=development
+      - NEXT_TELEMETRY_DISABLED=1
+      - NEXT_PUBLIC_API_URL=http://backend:8000
+      - NEXT_PUBLIC_WS_URL=ws://backend:8000
+      # Performance optimizations
+      - NEXT_SHARP_PATH=/app/node_modules/sharp
+      - NEXT_OPTIMIZE_FONTS=true
+      - NEXT_OPTIMIZE_IMAGES=true
+      # Gmail Inbox Zero Frontend Configuration (Development)
+      - NEXT_PUBLIC_GMAIL_INBOX_ZERO_ENABLED=true
+      - NEXT_PUBLIC_GMAIL_BATCH_MODE_ENABLED=true
+      - NEXT_PUBLIC_GMAIL_KEYBOARD_SHORTCUTS_ENABLED=true
+      - NEXT_PUBLIC_GMAIL_GAMIFICATION_ENABLED=true
+      - NEXT_PUBLIC_GMAIL_PROGRESS_TRACKING_ENABLED=true
+      - NEXT_PUBLIC_GMAIL_RESPONSIVE_DESIGN_ENABLED=true
+      - NEXT_PUBLIC_GMAIL_PERFORMANCE_METRICS_ENABLED=true
+      - NEXT_PUBLIC_GMAIL_EXPERIENCE_POINTS_ENABLED=true
+      - NEXT_PUBLIC_GMAIL_LEVEL_SYSTEM_ENABLED=true
+      - NEXT_PUBLIC_GMAIL_BADGE_SYSTEM_ENABLED=true
+      - NEXT_PUBLIC_GMAIL_STREAK_TRACKING_ENABLED=true
+      - NEXT_PUBLIC_GMAIL_EFFICIENCY_TRACKING_ENABLED=true
+      # Development specific settings
+      - NEXT_PUBLIC_GMAIL_DEBUG_MODE=true
+      - NEXT_PUBLIC_GMAIL_TEST_MODE=true
+      - NEXT_PUBLIC_GMAIL_MOCK_API=true
+    ports:
+      - "8085:3000"
+    networks:
+      - foodsave-network-dev
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+        reservations:
+          memory: 512M
+          cpus: '0.25'
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+    volumes:
+      - frontend_cache_dev:/app/.next/cache
+      # Mount source code for development hot-reload
+      - ./modern-frontend/src:/app/src
+      - ./modern-frontend/public:/app/public
+      - ./modern-frontend/package.json:/app/package.json
+      - ./modern-frontend/next.config.js:/app/next.config.js
+      - ./modern-frontend/tailwind.config.js:/app/tailwind.config.js
+      - ./modern-frontend/postcss.config.js:/app/postcss.config.js
+      # Gmail Inbox Zero development volumes
+      - ./modern-frontend/src/app/gmail-inbox-zero:/app/src/app/gmail-inbox-zero
+
+  # =============================================================================
+  # REDIS - CACHE (Development)
+  # =============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: foodsave-redis-dev
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 128mb --maxmemory-policy allkeys-lru --save 900 1 --save 300 10 --save 60 10000
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_data_dev:/data
+    networks:
+      - foodsave-network-dev
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
+        reservations:
+          memory: 128M
+          cpus: '0.1'
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+
+  # =============================================================================
+  # OLLAMA - AI MODELS (Development)
+  # =============================================================================
+  ollama:
+    image: ollama/ollama:latest
+    container_name: foodsave-ollama-dev
+    restart: unless-stopped
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_KEEP_ALIVE=12h
+      # Performance optimizations (reduced for development)
+      - OLLAMA_NUM_PARALLEL=1
+      - OLLAMA_GPU_LAYERS=20
+      - OLLAMA_MAX_LOADED_MODELS=1
+      - OLLAMA_FLASH_ATTENTION=1
+    ports:
+      - "11435:11434"
+    volumes:
+      - ollama_data_dev:/root/.ollama
+    networks:
+      - foodsave-network-dev
+    healthcheck:
+      test: ["CMD", "pgrep", "ollama"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 3G
+          cpus: '1.5'
+        reservations:
+          memory: 1.5G
+          cpus: '0.75'
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+
+networks:
+  foodsave-network-dev:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16
+
+volumes:
+  redis_data_dev:
+    driver: local
+  ollama_data_dev:
+    driver: local
+  frontend_cache_dev:
+    driver: local
+  backend_data_dev:
+    driver: local
+  backend_logs_dev:
+    driver: local
+  temp_uploads_dev:
+    driver: local
