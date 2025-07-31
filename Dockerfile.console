@@ -5,12 +5,15 @@ RUN apt-get update && apt-get install -y \
     curl \
     wget \
     git \
+    libmagic1 \
     && rm -rf /var/lib/apt/lists/*
 
 # Ustawienie katalogu roboczego
 WORKDIR /app
 
-# Kopiowanie plików aplikacji konsolowej
+# Kopiowanie plików aplikacji
+COPY cli.py .
+COPY console/ ./console/
 COPY console_app/ ./console_app/
 COPY requirements-console.txt .
 
@@ -24,5 +27,5 @@ RUN mkdir -p /app/paragony /app/wiedza_rag /app/data
 ENV PYTHONPATH=/app
 ENV PYTHONUNBUFFERED=1
 
-# Punkt wejścia
-ENTRYPOINT ["python", "-m", "console_app.main"] 
+# Domyślne polecenie (może być nadpisane przez docker-compose run)
+CMD ["python", "cli.py", "--help"]

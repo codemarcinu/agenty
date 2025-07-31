@@ -16,6 +16,13 @@ fi
 echo "🔧 Aktywacja środowiska wirtualnego..."
 source venv/bin/activate
 
+# Aktualizacja pip i instalacja setuptools
+echo "⏫ Aktualizacja pip i instalacja setuptools..."
+pip install --upgrade pip setuptools wheel
+
+# Ustawienie flag kompilatora C++
+export CXXFLAGS="-std=c++17"
+
 # Instalacja zależności
 echo "📦 Instalacja zależności..."
 pip install -r requirements-console.txt

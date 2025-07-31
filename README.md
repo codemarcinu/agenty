@@ -4,19 +4,26 @@
 
 Agenty to przyjazna aplikacja konsolowa, która pomoże Ci automatycznie przetwarzać paragony, zarządzać dokumentami i rozmawiać z inteligentnym asystentem AI. Nie musisz być programistą, aby z niej korzystać!
 
-## 🌟 Co wyróżnia Agenty?
+## Postępy projektu
 
-**🚀 Proste w użyciu** - Intuicyjne menu, wszystko po polsku, bez skomplikowanych ustawień
+- **Backend:** Stworzono w FastAPI.
+- **Integracja LLM:** Połączenie z lokalnymi modelami językowymi przez Ollama.
+- **System Agentów:** Zbudowano modułowy system z centralnym orkiestratorem.
+- **Baza Danych:** Zaprojektowano i wdrożono bazę danych z relacjami tabel.
+- **Przetwarzanie Języka Naturalnego:** Agent potrafi klasyfikować intencje, wyciągać dane oraz zapisywać i odczytywać informacje z bazy danych.
+- **Refaktoryzacja kodu:** Wprowadzono konteneryzację zależności (dependency injection), co doprowadziło do błędu `NameError` w trakcie implementacji.
 
-**🤖 Inteligentny asystent** - Rozmawiaj naturalnie z AI, które pomoże Ci w każdej sytuacji  
+## Milestones (Kamienie Milowe)
 
-**📄 Automatyczne OCR** - Wrzuć zdjęcie paragonu, a Agenty "przeczyta" co na nim jest
+### Aktualne zadania
+1.  **Naprawa błędu `NameError`**: Zidentyfikowano brakujący import `Depends` w pliku `api/v2/endpoints/chat.py`. Należy go dodać, aby aplikacja mogła się uruchomić.
 
-**📚 Baza wiedzy** - Dodaj swoje dokumenty i zadawaj pytania o ich zawartość
-
-**💾 Eksport danych** - Zapisuj wyniki w Excel, CSV lub innych formatach
-
-**🔄 Wszystko automatycznie** - Jedna komenda uruchamia cały system
+### Dalsze kroki
+1.  **Ukończenie operacji CRUD:** Dokończenie implementacji pełnej obsługi operacji Create, Read, Update, Delete.
+2.  **Inteligentny orkiestrator:** Rozbudowa orkiestratora o bardziej zaawansowane możliwości decyzyjne.
+3.  **Rozszerzenie agenta `FoodSave`:** Dodanie nowych funkcji do agenta, np. analizy wartości odżywczych.
+4.  **Budowa frontendu:** Stworzenie interfejsu użytkownika do interakcji z systemem.
+5.  **Tworzenie nowych agentów:** Rozbudowa systemu o nowych, wyspecjalizowanych agentów.
 
 ## 🎯 Co potrafi Agenty?
 

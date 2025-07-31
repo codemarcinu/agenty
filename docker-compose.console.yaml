@@ -11,6 +11,7 @@ services:
       - "8000:8000"
     environment:
       - OLLAMA_URL=http://ollama:11434
+      - REDIS_HOST=redis
       - REDIS_URL=redis://redis:6379
       - DATABASE_URL=sqlite:///./agenty.db
       - LOG_LEVEL=INFO
@@ -24,11 +25,11 @@ services:
       - ollama
       - redis
     restart: unless-stopped
-    # healthcheck:
-    #   test: [ "CMD", "curl", "-f", "http://localhost:8000/api/health" ]
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 3
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/api/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   # Ollama - modele AI (używa istniejącego wolumenu z modelami)
   ollama:
@@ -43,9 +44,9 @@ services:
     restart: unless-stopped
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:11434/api/version" ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   # Redis - cache i sesje
   redis:
@@ -84,9 +85,9 @@ services:
     depends_on:
       - agenty-backend
       - ollama
-    restart: unless-stopped
     stdin_open: true
     tty: true
+    entrypoint: ["python", "cli.py"]
 
 volumes:
   my_assistant_ollama_data:
